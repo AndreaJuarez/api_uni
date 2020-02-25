@@ -4,7 +4,7 @@
 import web
 
 from web.template import ALLOWED_AST_NODES
-ALLOWED_AST_NODES.append('Constant') bjc
+ALLOWED_AST_NODES.append('Constant') 
 
 urls = (
 	'/alumnos?', 'application.controllers.alumnos.Alumnos' #el simbolo ? inidca que recibira variables en la URL
