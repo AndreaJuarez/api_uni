@@ -3,8 +3,7 @@ import app
 import json
 import csv
 
-render = web.template.render('application/controllers/')   #En esta no se ocupa
-
+render = web.template.render('application/controllers/') 
 class Alumnos:
     def GET(self):
         try:
@@ -15,7 +14,7 @@ class Alumnos:
 
                 #METODO DE CONSULTAR TODO
                 if datos['action']=="get":        #Si accion es get va a hacer lo siguiente
-                    result2['app_version']="0.2.0" #visualizacion de datos lista
+                    result2['app_version']="0.4.0" #visualizacion de datos lista
                     result2['status']="200 OK"
                     with open('static/csv/alumnos.csv','r') as csvfile:   #Ruta del archivo csv que va a leer, r es de lectura, csvfile es una variable cualquiera
                         reader = csv.DictReader(csvfile)         #Lector del archivo, DictReader te almacena los datos como en diccionario en este caso en la variable reader
@@ -26,22 +25,21 @@ class Alumnos:
 
                 #METODO DE BUSQUEDA
                 elif datos['action']=="search":
-                    result2={}
-                    result2['version']="0.3.0"
-                    result2['status']="200 ok"
-                   
+                    result2['app_version']="0.4.0" #visualizacion de datos lista
+                    result2['status']="200 OK"
                     with open('static/csv/alumnos.csv','r') as csvfile:
                         reader = csv.DictReader(csvfile)
-                        result = []
+                        #result = []
                         for row in reader:
                             if str(row['matricula'])==datos['matricula']:
                                 result.append(row)
-                    return json.dumps(result)
+                                result2['alumnos']=result
+                    return json.dumps(result2)
 
                 #METODO DE INSERCION
                 elif datos['action']=="put":
-                    result2={} 
-                    result2['app_version']="0.5.0" 
+                    #result2={} 
+                    result2['app_version']="0.4.0" 
                     result2['status']="200 OK"
                     
                     matricula = str(datos['matricula'])
@@ -64,16 +62,19 @@ class Alumnos:
                     resultado['segundo_apellido']=segundo_apellido
                     resultado['carrera']=carrera
                     
-                    result2=[]
-                    result2.append(resultado)
+                    result3=[]
+                    result3.append(resultado)
 
                     with open('static/csv/alumnos.csv', 'a+', newline='') as variable_cualquiera:
                         writer = csv.writer(variable_cualquiera) 
                         writer.writerow(result)
-                    return result
+                        result2['alumnos']=result3
+                    return json.dumps(result2)
                 
                 #METODO DE ACTUALIZAR
                 elif datos['action'] == "update":
+                    result2['app_version']="0.4.0" 
+                    result2['status']="200 OK"
                     with open ('static/csv/alumnos.csv','r') as csvfiles:
                         reader =csv.DictReader(csvfiles)
                         final = []
@@ -110,9 +111,45 @@ class Alumnos:
                             writer = csv.writer(csvfiles)
                             for x in final:
                                 writer.writerow(x)
-                    return json.dumps("Actualizado")
+                    return json.dumps ("app_version: 0.4.0  ||  ACTUALIZADO  ||  status: 200 OK")
+                    #return("status: 200 OK")
+                    #return json.dumps("Actualizado")
 
                 #METODO DE ELIMINAR
+                # R E V I S A R
+                elif datos['action'] == "delete":
+                    with open ('static/csv/alumnos.csv','r') as csvfiles:
+                        reader =csv.DictReader(csvfiles)
+                        final = []
+                        for row in reader:
+                            result = []
+                            if  str(row['matricula']) == datos['matricula']:
+                                with open ('static/csv/alumnos.csv','w') as csvfile:
+                                    writer = csv.writer(csvfile)
+                                    writer.writerow(row)
+                                    print("COMPLETO")
+                            else:
+                                dato1 = row['matricula'] 
+                                dato2 = row['nombre']
+                                dato3 = row['primer_apellido']
+                                dato4 = row['segundo_apellido']
+                                dato5 = row['carrera']
+                                result.append(dato1)
+                                result.append(dato2)
+                                result.append(dato3)
+                                result.append(dato4)
+                                result.append(dato5)
+                                final.append(result)
+                            with open ('static/csv/alumnos.csv','a+', newline = '') as csvfiles:
+                                writer = csv.writer(csvfiles)
+                                writer.writerow(result)
+                                
+                        return json.dumps("Realizado")
+                else:
+                    result2={}
+                    result2['Version']="0.4.1"
+                    result2['status']="Accion no valida, intentelo de nuevo"
+                    return json.dumps(result2)
 
             else:
                 result={}
